@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" setup.py for ebscp
+""" setup.py for ebssh
 """
 import os, sys
 from setuptools import setup
@@ -11,25 +11,28 @@ if not os.getcwd()==this_dir:
     os.chdir(this_dir)
 
 # make sure we can import the version number so that it doesn't have
-# to be changed in two places. ebscp/__init__.py is also free
+# to be changed in two places. ebssh/__init__.py is also free
 # to import various requirements that haven't been installed yet
-sys.path.append(os.path.join(this_dir, 'ebscp'))
+sys.path.append(os.path.join(this_dir, 'ebssh'))
 from version import __version__
 sys.path.pop()
 
-base_url = 'https://github.com/mattvonrocketstein/ebscp/'
+base_url = 'https://github.com/mattvonrocketstein/ebssh/'
 setup(
-    name         = 'ebscp',
+    name         = 'ebssh',
     version      = __version__,
     description  = '',
     author       = 'mattvonrocketstein',
     author_email = '$author@gmail',
     url          = base_url,
     download_url = base_url+'/tarball/master',
-    packages     = ['ebscp'],
-    keywords     = ['ebscp'],
+    packages     = ['ebssh'],
+    keywords     = ['ebssh'],
     entry_points = {
         'console_scripts': \
-        ['pkg_script = ebscp.bin._ebscp:main', ] },
-    install_requires=[],
+        ['pkg_script = ebssh.bin._ebssh:main', ] },
+    install_requires=[
+        'mock',
+        'awsebcli==3.5',
+        'addict'],
     )

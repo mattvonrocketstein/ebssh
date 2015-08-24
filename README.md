@@ -9,7 +9,7 @@
 =======================================
 
 ```shell
-  $ git clone https://github.com/mattvonrocketstein/ebscp.git
+  $ git clone https://github.com/mattvonrocketstein/ebssh.git
   $ step2
 ```
 

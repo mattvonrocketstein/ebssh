@@ -1,6 +1,7 @@
 """ ebssh.decorators
 """
 import contextlib
+import functools
 
 import mock
 import ebcli
@@ -13,8 +14,8 @@ from ebcli.operations.sshops import _get_ssh_file
 
 
 from ebssh import config
+from ebssh.data import DEFAULT_USER
 
-DEFAULT_USER = 'ec2-user'
 
 def using_eb_context(fxn):
     """ this is a decorator that allows functions to run in a similar
@@ -33,7 +34,7 @@ def using_eb_context(fxn):
         proper.. there will be no sideffects outside of the decorated
         function call.
     """
-
+    @functools.wraps(fxn)
     def newf(*args, **kargs):
         managers = [
             mock.patch('ebcli.lib.aws._region_name', new=config.REGION),
@@ -119,6 +120,7 @@ def using_eb_ssh_context(fxn):
         regardless of of any errors occuring in the decorated
         function
     """
+    @functools.wraps(fxn)
     def newf(*args, **kargs):
         ids = _get_instance_ids()
         fxn_args = args
@@ -133,6 +135,7 @@ def using_fabric_context(fxn):
         the beanstalk host using the correct user, key, and
         hostname
     """
+    @functools.wraps(fxn)
     def newf(*args, **kargs):
         ip = kargs['ip']
         key = kargs['key_file']

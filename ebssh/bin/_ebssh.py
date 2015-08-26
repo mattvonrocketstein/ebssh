@@ -32,16 +32,14 @@ except KeyError:
     print red('ERROR: ')+_help
     raise SystemExit(1)
 
-else:
-    config.update(context)a
+config.update(context)
 
 # clean namespace, some things should
 # not be listed as fabric commands
 del using_fabric_context
 del using_eb_ssh_context
 
-if __name__ == '__main__':
-
+def _main():
     # a neat hack that makes this file a "self-hosting" fabfile,
     # ie it is invoked directly but still gets all the fabric niceties
     # like real option parsing, including --help and -l (for listing
@@ -56,3 +54,5 @@ if __name__ == '__main__':
         sys.argv[sys.argv.index(__file__) + 1:]
     sys.argv = patched_argv
     fmain()
+if __name__ == '__main__':
+    _main()

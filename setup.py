@@ -30,7 +30,7 @@ setup(
     keywords     = ['ebssh'],
     entry_points = {
         'console_scripts': \
-        ['ebssh = ebssh.bin._ebssh:entry', ] },
+        ['ebssh = ebssh.cli:entry', ] },
     install_requires=[
         'mock',
         'fabric',

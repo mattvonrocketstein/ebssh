@@ -17,7 +17,6 @@ _help = (
     'EB_APP, EB_ENV.  Optionally, you can set EB_USER '
     '(defaults to ec2-user)')
 
-
 def get_parser():
     """ build the default parser """
     parser = ArgumentParser()

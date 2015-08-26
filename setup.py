@@ -21,7 +21,7 @@ base_url = 'https://github.com/mattvonrocketstein/ebssh/'
 setup(
     name         = 'ebssh',
     version      = __version__,
-    description  = '',
+    description  = 'scp and other missing commands from awsebcli',
     author       = 'mattvonrocketstein',
     author_email = '$author@gmail',
     url          = base_url,
@@ -30,7 +30,7 @@ setup(
     keywords     = ['ebssh'],
     entry_points = {
         'console_scripts': \
-        ['ebssh = ebssh.bin._ebssh:_main', ] },
+        ['ebssh = ebssh.bin._ebssh:entry', ] },
     install_requires=[
         'mock',
         'fabric',

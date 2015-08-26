@@ -1,16 +1,14 @@
 """ ebssh.bin._ebssh
 """
 
-import os, sys
+import os
 from argparse import ArgumentParser
 
-from fabric import api
 from fabric.colors import red
 
 from ebssh import config
-from ebssh.decorators import using_eb_ssh_context
-from ebssh.decorators import using_fabric_context
 from ebssh.fabric_commands import run, put, get
+from ebssh import version
 
 _help = (
     'The ebssh commandline utility requires all of the '
@@ -18,6 +16,7 @@ _help = (
     'AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_DEFAULT_REGION, '
     'EB_APP, EB_ENV.  Optionally, you can set EB_USER '
     '(defaults to ec2-user)')
+
 
 def get_parser():
     """ build the default parser """
@@ -37,29 +36,33 @@ def get_parser():
 
     gparser = subparsers.add_parser('get', help='get file from remote')
     gparser.add_argument('remote_path', help='remote file')
-    gparser.add_argument('local_path', nargs='?', default='.', help='local file')
+    gparser.add_argument(
+        'local_path', nargs='?', default='.', help='local file')
 
     pparser = subparsers.add_parser('put', help='put file to remote')
     pparser.add_argument('local_path', help='remote file')
-    pparser.add_argument('remote_path', nargs='?', default='~', help='local file')
+    pparser.add_argument(
+        'remote_path', nargs='?', default='~', help='local file')
 
     pparser.set_defaults(subcommand='put')
     gparser.set_defaults(subcommand='get')
     rparser.set_defaults(subcommand='run')
     return parser
 
+
 def configure():
     _vars = 'AWS_ACCESS_KEY AWS_SECRET_KEY AWS_DEFAULT_REGION EB_APP EB_ENV'
     _vars = _vars.split()
     for v in _vars:
         try:
-            config.update({v:os.environ[v]})
+            config.update({v: os.environ[v]})
         except KeyError:
-            print # warnings clutter the startup, make sure error is visible
+            print  # warnings clutter the startup, make sure error is visible
             print red('ERROR: environment variable {0} should be set'.format(v))
             raise SystemExit(1)
     USER = os.environ.get('EB_USER', 'ec2-user')
-    config.update({'USER':USER})
+    config.update({'USER': USER})
+
 
 def entry():
     parser = get_parser()
@@ -86,4 +89,3 @@ def entry():
         put(local_path, remote_path)
     else:
         raise SystemExit("unrecognized subcommand")
-_main = entry

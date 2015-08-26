@@ -14,7 +14,6 @@ from ebcli.operations.sshops import _get_ssh_file
 
 
 from ebssh import config
-from ebssh.data import DEFAULT_USER
 
 
 def using_eb_context(fxn):
@@ -37,10 +36,11 @@ def using_eb_context(fxn):
     @functools.wraps(fxn)
     def eb_ctx_wrapper(*args, **kargs):
         managers = [
-            mock.patch('ebcli.lib.aws._region_name', new=config.AWS_DEFAULT_REGION),
+            mock.patch(
+                'ebcli.lib.aws._region_name', new=config.AWS_DEFAULT_REGION),
             mock.patch('ebcli.lib.aws._id', new=config.AWS_ACCESS_KEY),
             mock.patch('ebcli.lib.aws._key', new=config.AWS_SECRET_KEY),
-            ]
+        ]
         with contextlib.nested(*managers):
             return fxn(*args, **kargs)
     return eb_ctx_wrapper
@@ -53,6 +53,8 @@ def _get_instance_ids():
 # very similar to ebcli's `ssh_into_instance`, except that
 #  1) logging has been hijacked
 #  2) the given function will be called once ssh has been enabled
+
+
 @using_eb_context
 def beanstalk_ssh_wrapper(fxn, *args, **kargs):
     instance_id = kargs.pop('instance_id', None)

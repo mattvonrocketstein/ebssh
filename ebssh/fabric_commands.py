@@ -1,11 +1,10 @@
 """ ebssh.fabric_commands
 """
-import os, sys
-
 from fabric import api
 
 from ebssh.decorators import using_eb_ssh_context
 from ebssh.decorators import using_fabric_context
+
 
 @using_eb_ssh_context
 @using_fabric_context
@@ -14,12 +13,14 @@ def run(remote_cmd, key_file=None, ip=None):
     assert isinstance(remote_cmd, basestring)
     api.run(remote_cmd)
 
+
 @using_eb_ssh_context
 @using_fabric_context
 def put(local_path, remote_path='~', key_file=None, ip=None):
     """ put(local_path, remote_path) will scp local-path to remote-path"""
     assert all([local_path, key_file, ip])
     api.put(local_path, remote_path)
+
 
 @using_eb_ssh_context
 @using_fabric_context

@@ -1,6 +1,7 @@
 """ ebssh
 """
 import os
-from .version import __version__
 import addict
+from ebssh.version import __version__
+
 config = addict.Dict()

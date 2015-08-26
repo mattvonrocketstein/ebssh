@@ -49,8 +49,9 @@ def get_parser():
     return parser
 
 
-def configure():
-    _vars = 'AWS_ACCESS_KEY AWS_SECRET_KEY AWS_DEFAULT_REGION EB_APP EB_ENV'
+def configure(args):
+    _vars = ('AWS_ACCESS_KEY AWS_SECRET_KEY AWS_DEFAULT_REGION '
+             'EB_APP EB_ENV EB_KEY')
     _vars = _vars.split()
     for v in _vars:
         try:
@@ -62,7 +63,6 @@ def configure():
     USER = os.environ.get('EB_USER', 'ec2-user')
     config.update({'USER': USER})
 
-
 def entry():
     parser = get_parser()
     args = parser.parse_args()
@@ -72,7 +72,7 @@ def entry():
         if args.subcommand == 'help':
             parser.print_help()
         raise SystemExit()
-    configure()
+    configure(args)
     if args.subcommand == 'run':
         remote_cmd = args.remote_cmd
         result = run(remote_cmd)

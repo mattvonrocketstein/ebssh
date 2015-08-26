@@ -1,5 +1,6 @@
 """ ebssh.decorators
 """
+import os
 import contextlib
 import functools
 
@@ -40,6 +41,9 @@ def using_eb_context(fxn):
                 'ebcli.lib.aws._region_name', new=config.AWS_DEFAULT_REGION),
             mock.patch('ebcli.lib.aws._id', new=config.AWS_ACCESS_KEY),
             mock.patch('ebcli.lib.aws._key', new=config.AWS_SECRET_KEY),
+            mock.patch(
+                'ebcli.operations.sshops._get_ssh_file',
+                new=lambda keypair_name:os.path.expanduser(config.EB_KEY)),
         ]
         with contextlib.nested(*managers):
             return fxn(*args, **kargs)

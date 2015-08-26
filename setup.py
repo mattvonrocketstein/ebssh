@@ -30,9 +30,10 @@ setup(
     keywords     = ['ebssh'],
     entry_points = {
         'console_scripts': \
-        ['pkg_script = ebssh.bin._ebssh:main', ] },
+        ['ebssh = ebssh.bin._ebssh:main', ] },
     install_requires=[
         'mock',
+        'fabric',
         'awsebcli==3.5',
         'addict'],
     )

@@ -35,20 +35,20 @@ def using_eb_context(fxn):
         function call.
     """
     @functools.wraps(fxn)
-    def newf(*args, **kargs):
+    def eb_ctx_wrapper(*args, **kargs):
         managers = [
-            mock.patch('ebcli.lib.aws._region_name', new=config.REGION),
-            mock.patch('ebcli.lib.aws._id', new=config.ACCESS),
-            mock.patch('ebcli.lib.aws._key', new=config.SECRET),
+            mock.patch('ebcli.lib.aws._region_name', new=config.AWS_DEFAULT_REGION),
+            mock.patch('ebcli.lib.aws._id', new=config.AWS_ACCESS_KEY),
+            mock.patch('ebcli.lib.aws._key', new=config.AWS_SECRET_KEY),
             ]
         with contextlib.nested(*managers):
             return fxn(*args, **kargs)
-    return newf
+    return eb_ctx_wrapper
 
 
 @using_eb_context
 def _get_instance_ids():
-    return _oget_instance_ids(config.APP_NAME, config.ENV_NAME)
+    return _oget_instance_ids(config.EB_APP, config.EB_ENV)
 
 # very similar to ebcli's `ssh_into_instance`, except that
 #  1) logging has been hijacked
@@ -121,12 +121,12 @@ def using_eb_ssh_context(fxn):
         function
     """
     @functools.wraps(fxn)
-    def newf(*args, **kargs):
+    def eb_ssh_ctx_wrapper(*args, **kargs):
         ids = _get_instance_ids()
         fxn_args = args
         kargs.update(instance_id=ids[0])
         return beanstalk_ssh_wrapper(fxn, *fxn_args, **kargs)
-    return newf
+    return eb_ssh_ctx_wrapper
 
 
 def using_fabric_context(fxn):
@@ -136,10 +136,12 @@ def using_fabric_context(fxn):
         hostname
     """
     @functools.wraps(fxn)
-    def newf(*args, **kargs):
+    def eb_fab_ctx_wrapper(*args, **kargs):
         ip = kargs['ip']
+        assert isinstance(ip, basestring)
         key = kargs['key_file']
         with api.settings(user=config.USER,
-                          host_string=ip, key_filename=key):
+                          host_string=ip,
+                          key_filename=key):
             return fxn(*args, **kargs)
-    return newf
+    return eb_fab_ctx_wrapper

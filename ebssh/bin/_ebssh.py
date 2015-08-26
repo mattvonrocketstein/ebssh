@@ -2,6 +2,7 @@
 """
 
 import os, sys
+from argparse import ArgumentParser
 
 from fabric import api
 from fabric.colors import red
@@ -18,41 +19,71 @@ _help = (
     'EB_APP, EB_ENV.  Optionally, you can set EB_USER '
     '(defaults to ec2-user)')
 
-try:
-    context = dict(
-        ACCESS=os.environ['AWS_ACCESS_KEY'],
-        SECRET=os.environ["AWS_SECRET_KEY"],
-        REGION=os.environ['AWS_DEFAULT_REGION'],
-        APP_NAME=os.environ['EB_APP'],
-        ENV_NAME=os.environ['EB_ENV'],
-        USER=os.environ.get(
-            'EB_USER', 'ec2-user'))
-except KeyError:
-    print # warnings clutter the startup, make sure error is visible
-    print red('ERROR: ')+_help
-    raise SystemExit(1)
+def get_parser():
+    """ build the default parser """
+    parser = ArgumentParser()
+    # parser.set_conflict_handler("resolve")
+    parser.add_argument(
+        "-v", '--version', default=False, dest='version',
+        action='store_true',
+        help=("show version information"))
+    subparsers = parser.add_subparsers(help='commands')
+    help_parser = subparsers.add_parser('help', help='show help info')
+    help_parser.set_defaults(subcommand='help')
 
-config.update(context)
+    rparser = subparsers.add_parser('run', help='execute remote command')
+    rparser.add_argument(
+        'remote_cmd', type=unicode, help='remote command to execute')
 
-# clean namespace, some things should
-# not be listed as fabric commands
-del using_fabric_context
-del using_eb_ssh_context
+    gparser = subparsers.add_parser('get', help='get file from remote')
+    gparser.add_argument('remote_path', help='remote file')
+    gparser.add_argument('local_path', nargs='?', default='.', help='local file')
 
-def _main():
-    # a neat hack that makes this file a "self-hosting" fabfile,
-    # ie it is invoked directly but still gets all the fabric niceties
-    # like real option parsing, including --help and -l (for listing
-    # commands). note that as of fabric 1.10, the file for some reason
-    # needs to end in .py, despite what the documentation says.  see:
-    # http://docs.fabfile.org/en/1.4.2/usage/fabfiles.html#fabfile-discovery
-    #
-    # the .index() manipulation below should make this work regardless of
-    # whether this is invoked from shell as "./foo.py" or "python foo.py"
-    from fabric.main import main as fmain
-    patched_argv = ['fab', '-f', __file__, ] + \
-        sys.argv[sys.argv.index(__file__) + 1:]
-    sys.argv = patched_argv
-    fmain()
-if __name__ == '__main__':
-    _main()
+    pparser = subparsers.add_parser('put', help='put file to remote')
+    pparser.add_argument('local_path', help='remote file')
+    pparser.add_argument('remote_path', nargs='?', default='~', help='local file')
+
+    pparser.set_defaults(subcommand='put')
+    gparser.set_defaults(subcommand='get')
+    rparser.set_defaults(subcommand='run')
+    return parser
+
+def configure():
+    _vars = 'AWS_ACCESS_KEY AWS_SECRET_KEY AWS_DEFAULT_REGION EB_APP EB_ENV'
+    _vars = _vars.split()
+    for v in _vars:
+        try:
+            config.update({v:os.environ[v]})
+        except KeyError:
+            print # warnings clutter the startup, make sure error is visible
+            print red('ERROR: environment variable {0} should be set'.format(v))
+            raise SystemExit(1)
+    USER = os.environ.get('EB_USER', 'ec2-user')
+    config.update({'USER':USER})
+
+def entry():
+    parser = get_parser()
+    args = parser.parse_args()
+    if args.subcommand in ['version', 'help']:
+        if args.subcommand == 'version':
+            print version.__version__
+        if args.subcommand == 'help':
+            parser.print_help()
+        raise SystemExit()
+    configure()
+    if args.subcommand == 'run':
+        remote_cmd = args.remote_cmd
+        result = run(remote_cmd)
+        # TODO: return status code?
+        return
+    elif args.subcommand == 'get':
+        remote_path = args.remote_path
+        local_path = args.local_path
+        get(remote_path, local_path)
+    elif args.subcommand == 'put':
+        remote_path = args.remote_path
+        local_path = args.local_path
+        put(local_path, remote_path)
+    else:
+        raise SystemExit("unrecognized subcommand")
+_main = entry

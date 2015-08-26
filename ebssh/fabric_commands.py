@@ -11,6 +11,7 @@ from ebssh.decorators import using_fabric_context
 @using_fabric_context
 def run(remote_cmd, key_file=None, ip=None):
     """ run command on remote """
+    assert isinstance(remote_cmd, basestring)
     api.run(remote_cmd)
 
 @using_eb_ssh_context

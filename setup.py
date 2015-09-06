@@ -34,6 +34,6 @@ setup(
     install_requires=[
         'mock',
         'fabric',
-        'awsebcli==3.5',
-        'addict'],
+        'awsebcli==3.5',],
+
     )

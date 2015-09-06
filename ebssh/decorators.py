@@ -38,9 +38,9 @@ def using_eb_context(fxn):
     def eb_ctx_wrapper(*args, **kargs):
         managers = [
             mock.patch(
-                'ebcli.lib.aws._region_name', new=config.AWS_DEFAULT_REGION),
-            mock.patch('ebcli.lib.aws._id', new=config.AWS_ACCESS_KEY),
-            mock.patch('ebcli.lib.aws._key', new=config.AWS_SECRET_KEY),
+                'ebcli.lib.aws._region_name', new=config['AWS_DEFAULT_REGION']),
+            mock.patch('ebcli.lib.aws._id', new=config['AWS_ACCESS_KEY']),
+            mock.patch('ebcli.lib.aws._key', new=config['AWS_SECRET_KEY']),
             mock.patch(
                 'ebcli.operations.sshops._get_ssh_file',
                 new=lambda keypair_name:os.path.expanduser(config.EB_KEY)),
@@ -52,7 +52,7 @@ def using_eb_context(fxn):
 
 @using_eb_context
 def _get_instance_ids():
-    return _oget_instance_ids(config.EB_APP, config.EB_ENV)
+    return _oget_instance_ids(config['EB_APP'], config['EB_ENV'])
 
 # very similar to ebcli's `ssh_into_instance`, except that
 #  1) logging has been hijacked
@@ -146,7 +146,7 @@ def using_fabric_context(fxn):
         ip = kargs['ip']
         assert isinstance(ip, basestring)
         key = kargs['key_file']
-        with api.settings(user=config.USER,
+        with api.settings(user=config['EB_USER'],
                           host_string=ip,
                           key_filename=key):
             return fxn(*args, **kargs)

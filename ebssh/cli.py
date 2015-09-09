@@ -17,6 +17,7 @@ _help = (
     'EB_APP, EB_ENV.  Optionally, you can set EB_USER '
     '(defaults to ec2-user)')
 
+
 def get_parser():
     """ build the default parser """
     parser = ArgumentParser()
@@ -62,6 +63,7 @@ def configure(args):
             raise SystemExit(1)
     USER = os.environ.get('EB_USER', 'ec2-user')
     config.update({'USER': USER})
+
 
 def entry():
     parser = get_parser()

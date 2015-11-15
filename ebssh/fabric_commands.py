@@ -13,7 +13,7 @@ from ebssh.decorators import using_fabric_context
 def run(remote_cmd, key_file=None, ip=None):
     """ run command on remote """
     assert isinstance(remote_cmd, basestring)
-    api.run(remote_cmd)
+    return api.run(remote_cmd)
 
 
 @using_eb_ssh_context
@@ -21,7 +21,7 @@ def run(remote_cmd, key_file=None, ip=None):
 def sudo(remote_cmd, key_file=None, ip=None, **kargs):
     """ run command on remote """
     assert isinstance(remote_cmd, basestring)
-    api.sudo(remote_cmd)
+    return api.sudo(remote_cmd)
 
 
 @using_eb_ssh_context
@@ -34,7 +34,7 @@ def run_sysenv(remote_cmd, key_file=None, ip=None):
     with api.prefix(cmd):
         # prefix means that EB environment variables
         # should be taken into account
-        api.run(remote_cmd)
+        return api.run(remote_cmd)
 
 
 @using_eb_ssh_context
@@ -42,7 +42,7 @@ def run_sysenv(remote_cmd, key_file=None, ip=None):
 def put(local_path, remote_path='~', key_file=None, ip=None):
     """ put(local_path, remote_path) will scp local-path to remote-path"""
     assert all([local_path, key_file, ip])
-    api.put(local_path, remote_path)
+    return api.put(local_path, remote_path)
 
 
 @using_eb_ssh_context
@@ -50,4 +50,4 @@ def put(local_path, remote_path='~', key_file=None, ip=None):
 def get(remote_path, local_path='.', key_file=None, ip=None):
     """ get(remote_path, local_path) will scp remote-path to local-path """
     assert all([remote_path, local_path, key_file, ip])
-    api.get(remote_path, local_path)
+    return api.get(remote_path, local_path)

@@ -7,3 +7,4 @@ DEFAULT_USER = 'ec2-user'
 # AMIs in circulation?  annoying
 SYS_ENV_PATH_OLD = '/opt/elasticbeanstalk/support/envvars.d/sysenv'
 SYS_ENV_PATH_NEW = '/opt/elasticbeanstalk/support/envvars'
+# aaaand for python beanstalks: /opt/python/current/env
